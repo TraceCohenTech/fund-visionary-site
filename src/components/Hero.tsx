@@ -8,51 +8,132 @@ const Hero = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const characters = "アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン01";
-    const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops: number[] = [];
-
-    for (let i = 0; i < columns; i++) {
-      drops[i] = 1;
+    const gl = canvas.getContext('webgl2');
+    if (!gl) {
+      console.error('WebGL2 not supported');
+      return;
     }
 
-    const draw = () => {
-      ctx.fillStyle = "rgba(26, 31, 44, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = "#8B5CF6";
-      ctx.font = `${fontSize}px monospace`;
-
-      for (let i = 0; i < drops.length; i++) {
-        const text = characters[Math.floor(Math.random() * characters.length)];
-        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
-        drops[i]++;
-      }
-    };
-
-    const interval = setInterval(draw, 33);
-
-    const handleResize = () => {
+    const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const vertexShaderSource = `#version 300 es
+      in vec4 a_position;
+      void main() {
+        gl_Position = a_position;
+      }
+    `;
+
+    const fragmentShaderSource = `#version 300 es
+      precision highp float;
+      out vec4 outColor;
+      uniform vec2 u_resolution;
+      uniform float u_time;
+
+      vec3 hsv(float h,float s,float v) {
+        vec4 t=vec4(1.,2./3.,1./3.,3.);
+        vec3 p=abs(fract(vec3(h)+t.xyz)*6.-vec3(t.w));
+        return v*mix(vec3(t.x),clamp(p-vec3(t.x),0.,1.),s);
+      }
+
+      void main() {
+        vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+        float t = u_time * 0.5;
+        
+        vec3 color = vec3(0.0);
+        
+        for(float i = 0.0; i < 4.0; i++) {
+          uv = abs(uv * 1.5) - 1.0;
+          float d = length(uv) * exp(-length(uv));
+          vec3 col = hsv(t * 0.1 + i * 0.2, 0.8, 1.0);
+          d = sin(d * 8.0 + t) / 8.0;
+          d = abs(d);
+          d = pow(0.02 / d, 1.5);
+          color += col * d;
+        }
+
+        outColor = vec4(color * 0.15, 0.95);
+      }
+    `;
+
+    const createShader = (gl: WebGL2RenderingContext, type: number, source: string) => {
+      const shader = gl.createShader(type);
+      if (!shader) return null;
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error('Shader compilation error:', gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+      }
+      return shader;
+    };
+
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+    if (!vertexShader || !fragmentShader) {
+      console.error('Shader creation failed');
+      return;
+    }
+
+    const program = gl.createProgram();
+    if (!program) return;
+
+    gl.attachShader(program, vertexShader);
+    gl.attachShader(program, fragmentShader);
+    gl.linkProgram(program);
+
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program link error:', gl.getProgramInfoLog(program));
+      return;
+    }
+
+    const positionAttributeLocation = gl.getAttribLocation(program, 'a_position');
+    const positionBuffer = gl.createBuffer();
+    const positions = [
+      -1, -1,
+       1, -1,
+      -1,  1,
+      -1,  1,
+       1, -1,
+       1,  1,
+    ];
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+    const vao = gl.createVertexArray();
+    gl.bindVertexArray(vao);
+    gl.enableVertexAttribArray(positionAttributeLocation);
+    gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
+
+    const resolutionUniformLocation = gl.getUniformLocation(program, 'u_resolution');
+    const timeUniformLocation = gl.getUniformLocation(program, 'u_time');
+
+    const render = (time: number) => {
+      gl.useProgram(program);
+      gl.bindVertexArray(vao);
+
+      gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
+      gl.uniform1f(timeUniformLocation, time * 0.001);
+
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+      requestAnimationFrame(render);
+    };
+
+    requestAnimationFrame(render);
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', resizeCanvas);
+      if (program) gl.deleteProgram(program);
+      if (vertexShader) gl.deleteShader(vertexShader);
+      if (fragmentShader) gl.deleteShader(fragmentShader);
     };
   }, []);
 
@@ -60,7 +141,8 @@ const Hero = () => {
     <div className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-secondary">
       <canvas
         ref={canvasRef}
-        className="absolute inset-0 w-full h-full opacity-30"
+        className="absolute inset-0 w-full h-full"
+        style={{ opacity: 0.4 }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-secondary/90 to-secondary"></div>
       <div className="container mx-auto px-4 relative z-10">
