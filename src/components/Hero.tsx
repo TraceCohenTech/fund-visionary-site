@@ -36,29 +36,86 @@ const Hero = () => {
       uniform vec2 u_resolution;
       uniform float u_time;
 
+      #define PI 3.14159265359
+
       vec3 hsv(float h,float s,float v) {
         vec4 t=vec4(1.,2./3.,1./3.,3.);
         vec3 p=abs(fract(vec3(h)+t.xyz)*6.-vec3(t.w));
         return v*mix(vec3(t.x),clamp(p-vec3(t.x),0.,1.),s);
       }
 
+      float noise(vec2 p) {
+        return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+      }
+
       void main() {
         vec2 uv = (gl_FragCoord.xy * 2.0 - u_resolution.xy) / min(u_resolution.x, u_resolution.y);
-        float t = u_time * 0.5;
+        float t = u_time * 2.0;
         
-        vec3 color = vec3(0.0);
+        vec3 finalColor = vec3(0.0);
         
-        for(float i = 0.0; i < 4.0; i++) {
-          uv = abs(uv * 1.5) - 1.0;
-          float d = length(uv) * exp(-length(uv));
-          vec3 col = hsv(t * 0.1 + i * 0.2, 0.8, 1.0);
-          d = sin(d * 8.0 + t) / 8.0;
-          d = abs(d);
-          d = pow(0.02 / d, 1.5);
-          color += col * d;
+        // Plasma field effect
+        for(float i = 0.0; i < 3.0; i++) {
+          vec2 pos = uv * (2.0 + i);
+          float plasma = sin(pos.x * 10.0 + t) + cos(pos.y * 10.0 + t);
+          plasma += sin(sqrt(pos.x * pos.x + pos.y * pos.y) * 10.0);
+          vec3 plasmaColor = hsv(t * 0.1 + i * 0.2 + plasma * 0.1, 0.8, 1.0);
+          finalColor += plasmaColor * 0.3;
         }
 
-        outColor = vec4(color * 0.15, 0.95);
+        // Particle system
+        for(float i = 0.0; i < 5.0; i++) {
+          vec2 particlePos = vec2(
+            noise(vec2(i, t * 0.5)),
+            fract(noise(vec2(i + 43.12, t * 0.5)) - t * 0.2)
+          );
+          float particle = length(uv - particlePos * 2.0 + 1.0);
+          particle = 0.01 / particle;
+          finalColor += vec3(0.6, 0.8, 1.0) * particle * 0.3;
+        }
+
+        // Neural network nodes
+        for(float i = 0.0; i < 6.0; i++) {
+          vec2 nodePos = vec2(
+            sin(t * 0.5 + i * PI / 3.0),
+            cos(t * 0.5 + i * PI / 3.0)
+          ) * 0.5;
+          float node = length(uv - nodePos);
+          node = smoothstep(0.1, 0.09, node);
+          finalColor += vec3(1.0, 0.5, 0.8) * node * 0.3;
+
+          // Connections between nodes
+          for(float j = 0.0; j < 6.0; j++) {
+            vec2 nextNodePos = vec2(
+              sin(t * 0.5 + j * PI / 3.0),
+              cos(t * 0.5 + j * PI / 3.0)
+            ) * 0.5;
+            float connection = smoothstep(0.02, 0.01, abs(length(
+              uv - nodePos - (nextNodePos - nodePos) * fract(t + i * 0.1)
+            )));
+            finalColor += vec3(0.3, 0.7, 1.0) * connection * 0.1;
+          }
+        }
+
+        // AI training gradients
+        vec2 gradientUV = uv;
+        gradientUV *= rotate2D(t * 0.2);
+        for(float i = 1.0; i < 4.0; i++) {
+          float gradient = sin(gradientUV.x * 5.0 * i + t) * cos(gradientUV.y * 5.0 * i + t);
+          finalColor += hsv(t * 0.05 + i * 0.1 + gradient * 0.2, 0.7, 1.0) * 0.15;
+        }
+
+        // Enhance contrast and add glow
+        finalColor = pow(finalColor, vec3(1.2));
+        finalColor *= 1.5;
+
+        outColor = vec4(finalColor, 0.95);
+      }
+
+      mat2 rotate2D(float angle) {
+        float s = sin(angle);
+        float c = cos(angle);
+        return mat2(c, -s, s, c);
       }
     `;
 
@@ -142,9 +199,9 @@ const Hero = () => {
       <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
-        style={{ opacity: 0.4 }}
+        style={{ opacity: 0.6 }}
       />
-      <div className="absolute inset-0 bg-gradient-to-b from-secondary/90 to-secondary"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-secondary/80 to-secondary"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 animate-fade-in">
