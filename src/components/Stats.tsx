@@ -1,8 +1,8 @@
 const Stats = () => {
   const stats = [
-    { number: "$100M+", label: "Assets Under Management" },
-    { number: "50+", label: "Portfolio Companies" },
-    { number: "12", label: "Unicorn Exits" },
+    { number: "100+", label: "Portfolio Companies" },
+    { number: "20+", label: "Years Combined Experience" },
+    { number: "15+", label: "Successful Exits" },
   ];
 
   return (
