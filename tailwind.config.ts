@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -25,21 +26,26 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#8B5CF6",
+          DEFAULT: "#0047AB", // Deep blue (USA flag blue)
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#1A1F2C",
+          DEFAULT: "#050A14", // Almost black
           foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#D6BCFA",
-          foreground: "#1A1F2C",
+          DEFAULT: "#005EB8", // Israeli blue
+          foreground: "#FFFFFF",
         },
+        highlight: {
+          DEFAULT: "#FFFFFF",
+          foreground: "#050A14",
+        }
       },
       animation: {
         "fade-in": "fade-in 0.5s ease-out",
         "slide-in": "slide-in 0.5s ease-out",
+        "float": "float 4s ease-in-out infinite",
       },
       keyframes: {
         "fade-in": {
@@ -50,6 +56,10 @@ export default {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(0)" },
         },
+        "float": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" }
+        }
       },
     },
   },
