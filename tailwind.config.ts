@@ -61,6 +61,9 @@ export default {
           "50%": { transform: "translateY(-10px)" }
         }
       },
+      zIndex: {
+        "-10": "-10",
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],
