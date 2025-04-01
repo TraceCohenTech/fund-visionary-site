@@ -8,19 +8,19 @@ import ThreeBackground from "../components/ThreeBackground";
 
 const Index = () => {
   return (
-    <div className="relative min-h-screen bg-secondary">
+    <div className="relative min-h-screen bg-highlight">
       <ThreeBackground />
       <Hero />
-      <div id="focus">
+      <div id="focus" className="bg-highlight">
         <Focus />
       </div>
-      <div id="stats">
+      <div id="stats" className="bg-highlight">
         <Stats />
       </div>
-      <div id="news">
+      <div id="news" className="bg-highlight">
         <News />
       </div>
-      <div id="contact">
+      <div id="contact" className="bg-highlight">
         <Contact />
       </div>
     </div>

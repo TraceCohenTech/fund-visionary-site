@@ -1,3 +1,4 @@
+
 import { Brain, Cpu, Globe } from "lucide-react";
 
 const Focus = () => {
@@ -20,21 +21,21 @@ const Focus = () => {
   ];
 
   return (
-    <div className="bg-secondary py-20">
+    <div className="bg-highlight py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-secondary-foreground mb-12">
           Investment Focus
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {areas.map((area, index) => (
             <div
               key={area.title}
-              className="bg-secondary/50 p-6 rounded-lg border border-primary/20 hover:border-primary/40 transition-all duration-300"
+              className="bg-secondary/20 p-6 rounded-lg border border-primary/20 hover:border-primary/60 shadow-sm transition-all duration-300"
               style={{ animationDelay: `${index * 0.2}s` }}
             >
               <div className="text-primary mb-4">{area.icon}</div>
-              <h3 className="text-xl font-semibold text-white mb-2">{area.title}</h3>
-              <p className="text-gray-400">{area.description}</p>
+              <h3 className="text-xl font-semibold text-secondary-foreground mb-2">{area.title}</h3>
+              <p className="text-secondary-foreground/80">{area.description}</p>
             </div>
           ))}
         </div>

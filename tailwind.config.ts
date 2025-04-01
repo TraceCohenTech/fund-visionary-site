@@ -30,16 +30,16 @@ export default {
           foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#050A14", // Almost black
-          foreground: "#FFFFFF",
+          DEFAULT: "#F0F4F8", // Light blue-gray (now much lighter)
+          foreground: "#0A1F33", // Dark blue for text on light background
         },
         accent: {
           DEFAULT: "#005EB8", // Israeli blue
           foreground: "#FFFFFF",
         },
         highlight: {
-          DEFAULT: "#FFFFFF",
-          foreground: "#050A14",
+          DEFAULT: "#FFFFFF", // White background
+          foreground: "#050A14", // Dark text for contrast
         }
       },
       animation: {

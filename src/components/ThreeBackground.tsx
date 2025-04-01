@@ -30,10 +30,10 @@ const ThreeBackground = () => {
     containerRef.current.appendChild(renderer.domElement);
     
     // Enhance lights for better visibility
-    const ambientLight = new THREE.AmbientLight(0x404040, 3); // Increased intensity
+    const ambientLight = new THREE.AmbientLight(0x404040, 5); // Increased intensity
     scene.add(ambientLight);
     
-    const directionalLight = new THREE.DirectionalLight(0x0047AB, 2); // Increased intensity
+    const directionalLight = new THREE.DirectionalLight(0x0047AB, 3); // Increased intensity
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
     
@@ -65,10 +65,10 @@ const ThreeBackground = () => {
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.08, // Increased size for visibility
-      color: 0x00A5FF, // Brighter blue
+      size: 0.10, // Increased size for visibility
+      color: 0x0047AB, // Darker blue for contrast with light background
       transparent: true,
-      opacity: 0.8, // Increased opacity
+      opacity: 1.0, // Full opacity for better visibility
       sizeAttenuation: true,
     });
     
@@ -118,10 +118,10 @@ const ThreeBackground = () => {
     lineGeometry.setIndex(lineIndices);
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x00D2FF, // Brighter blue for lines
+      color: 0x0047AB, // Darker blue for lines
       transparent: true,
-      opacity: 0.6, // Increased opacity
-      linewidth: 1,
+      opacity: 0.8, // Increased opacity
+      linewidth: 1.5,
     });
     
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
@@ -134,15 +134,15 @@ const ThreeBackground = () => {
     for (let i = 0; i < ringCount; i++) {
       const ringGeometry = new THREE.TorusGeometry(
         8 + i * 3,  // radius
-        0.1,       // increased tube radius
+        0.15,       // increased tube radius
         16,         // radial segments
         100         // tubular segments
       );
       
       const ringMaterial = new THREE.MeshBasicMaterial({
-        color: i === 0 ? 0x00D2FF : i === 1 ? 0x4DA6FF : 0x66E0FF, // Brighter colors
+        color: i === 0 ? 0x0047AB : i === 1 ? 0x0055CC : 0x0066FF, // Blue gradient
         transparent: true,
-        opacity: 0.8, // Increased opacity
+        opacity: 0.9, // Increased opacity
         side: THREE.DoubleSide,
       });
       
@@ -174,12 +174,12 @@ const ThreeBackground = () => {
     
     dataPulseGeometry.setAttribute('position', new THREE.BufferAttribute(dataPulsePositions, 3));
     
-    // Create data pulse material with brighter color
+    // Create data pulse material with darker color
     const dataPulseMaterial = new THREE.PointsMaterial({
-      size: 0.15, // Increased size
-      color: 0x2AFFFF, // Brighter cyan
+      size: 0.18, // Increased size
+      color: 0x0055CC, // Darker blue
       transparent: true,
-      opacity: 0.9, // Increased opacity
+      opacity: 1.0, // Full opacity
       sizeAttenuation: true,
     });
     
@@ -281,7 +281,7 @@ const ThreeBackground = () => {
   return (
     <div 
       ref={containerRef} 
-      className="absolute inset-0 -z-10 bg-gradient-to-b from-secondary via-secondary to-[#010207]"
+      className="absolute inset-0 -z-10 bg-gradient-to-b from-highlight to-accent/20"
       style={{ overflow: 'hidden' }}
     />
   );

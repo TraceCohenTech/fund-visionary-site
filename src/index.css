@@ -1,10 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   body {
-    @apply bg-secondary text-foreground;
+    @apply bg-highlight text-secondary-foreground;
   }
 }
 
