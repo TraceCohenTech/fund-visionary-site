@@ -20,7 +20,7 @@ const ThreeBackground = () => {
     );
     camera.position.z = 20;
     
-    // Set up renderer
+    // Set up renderer with better visibility settings
     const renderer = new THREE.WebGLRenderer({ 
       antialias: true,
       alpha: true 
@@ -29,20 +29,20 @@ const ThreeBackground = () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     containerRef.current.appendChild(renderer.domElement);
     
-    // Create lights
-    const ambientLight = new THREE.AmbientLight(0x202040, 1.5);
+    // Enhance lights for better visibility
+    const ambientLight = new THREE.AmbientLight(0x404040, 3); // Increased intensity
     scene.add(ambientLight);
     
-    const directionalLight = new THREE.DirectionalLight(0x0047AB, 1);
+    const directionalLight = new THREE.DirectionalLight(0x0047AB, 2); // Increased intensity
     directionalLight.position.set(1, 1, 1);
     scene.add(directionalLight);
     
-    // Create particles
+    // Create particles with enhanced visibility
     const particlesGeometry = new THREE.BufferGeometry();
     const particlesCount = 3000;
     const posArray = new Float32Array(particlesCount * 3);
     
-    // Create standard particles
+    // Create standard particles with more pronounced positions
     for (let i = 0; i < particlesCount * 3; i += 3) {
       const angle = Math.random() * Math.PI * 2;
       const radius = 5 + Math.random() * 15;
@@ -51,10 +51,10 @@ const ThreeBackground = () => {
       let z = Math.sin(angle) * radius;
       let y = Math.sin(x / 3) * Math.cos(z / 3) * 3;
       
-      // Create peaks
+      // Create more pronounced peaks
       const distance = Math.sqrt(x*x + z*z);
       if (distance < 12 && Math.random() > 0.7) {
-        y += (12 - distance) * (Math.random() * 0.5 + 0.5);
+        y += (12 - distance) * (Math.random() * 0.8 + 0.5);
       }
       
       posArray[i] = x;
@@ -65,17 +65,17 @@ const ThreeBackground = () => {
     particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
     
     const particlesMaterial = new THREE.PointsMaterial({
-      size: 0.05,
-      color: 0x0047AB, // Deep blue (USA flag blue)
+      size: 0.08, // Increased size for visibility
+      color: 0x00A5FF, // Brighter blue
       transparent: true,
-      opacity: 0.7,
+      opacity: 0.8, // Increased opacity
       sizeAttenuation: true,
     });
     
     const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particlesMesh);
     
-    // Create neural network effect (connected nodes)
+    // Create neural network effect with brighter lines
     const lineGeometry = new THREE.BufferGeometry();
     const linePositions: number[] = [];
     const lineIndices: number[] = [];
@@ -118,31 +118,31 @@ const ThreeBackground = () => {
     lineGeometry.setIndex(lineIndices);
     
     const lineMaterial = new THREE.LineBasicMaterial({
-      color: 0x005EB8,
+      color: 0x00D2FF, // Brighter blue for lines
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.6, // Increased opacity
       linewidth: 1,
     });
     
     const lineMesh = new THREE.LineSegments(lineGeometry, lineMaterial);
     scene.add(lineMesh);
     
-    // Create holographic tech rings
+    // Create brighter holographic tech rings
     const rings: THREE.Mesh[] = [];
     const ringCount = 3;
     
     for (let i = 0; i < ringCount; i++) {
       const ringGeometry = new THREE.TorusGeometry(
         8 + i * 3,  // radius
-        0.05,       // tube radius
+        0.1,       // increased tube radius
         16,         // radial segments
         100         // tubular segments
       );
       
       const ringMaterial = new THREE.MeshBasicMaterial({
-        color: i === 0 ? 0x0047AB : i === 1 ? 0x005EB8 : 0x0073E6,
+        color: i === 0 ? 0x00D2FF : i === 1 ? 0x4DA6FF : 0x66E0FF, // Brighter colors
         transparent: true,
-        opacity: 0.6,
+        opacity: 0.8, // Increased opacity
         side: THREE.DoubleSide,
       });
       
@@ -153,7 +153,7 @@ const ThreeBackground = () => {
       scene.add(ring);
     }
     
-    // Create binary data stream particles
+    // Create binary data stream particles with enhanced visibility
     const dataPulseGeometry = new THREE.BufferGeometry();
     const dataPulsePositions = new Float32Array(500 * 3);
     const dataPulseVelocities = new Float32Array(500 * 3);
@@ -166,55 +166,55 @@ const ThreeBackground = () => {
       dataPulsePositions[i + 1] = (Math.random() - 0.5) * 20; // Spread vertically
       dataPulsePositions[i + 2] = Math.sin(angle) * radius;
       
-      // Velocity for animation
-      dataPulseVelocities[i] = (Math.random() - 0.5) * 0.05;
-      dataPulseVelocities[i + 1] = (Math.random() - 0.5) * 0.05;
-      dataPulseVelocities[i + 2] = (Math.random() - 0.5) * 0.05;
+      // Increased velocity for animation
+      dataPulseVelocities[i] = (Math.random() - 0.5) * 0.08;
+      dataPulseVelocities[i + 1] = (Math.random() - 0.5) * 0.08;
+      dataPulseVelocities[i + 2] = (Math.random() - 0.5) * 0.08;
     }
     
     dataPulseGeometry.setAttribute('position', new THREE.BufferAttribute(dataPulsePositions, 3));
     
-    // Create data pulse material with custom color
+    // Create data pulse material with brighter color
     const dataPulseMaterial = new THREE.PointsMaterial({
-      size: 0.1,
-      color: 0x00FFFF, // Cyan for data pulses
+      size: 0.15, // Increased size
+      color: 0x2AFFFF, // Brighter cyan
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.9, // Increased opacity
       sizeAttenuation: true,
     });
     
     const dataPulseMesh = new THREE.Points(dataPulseGeometry, dataPulseMaterial);
     scene.add(dataPulseMesh);
     
-    // Animation
+    // Animation with faster movement
     const clock = new THREE.Clock();
     
     const animate = () => {
       const elapsedTime = clock.getElapsedTime();
       
-      // Rotate the network and particles
-      particlesMesh.rotation.y = elapsedTime * 0.05;
-      lineMesh.rotation.y = elapsedTime * 0.05;
+      // Rotate the network and particles with increased speed
+      particlesMesh.rotation.y = elapsedTime * 0.08;
+      lineMesh.rotation.y = elapsedTime * 0.08;
       
-      // Animate rings
+      // Animate rings with increased speed
       rings.forEach((ring, i) => {
-        ring.rotation.z = elapsedTime * (0.1 + i * 0.05) % (Math.PI * 2);
-        ring.rotation.y = Math.sin(elapsedTime * 0.2) * 0.2 + (i * Math.PI / 6);
+        ring.rotation.z = elapsedTime * (0.15 + i * 0.05) % (Math.PI * 2);
+        ring.rotation.y = Math.sin(elapsedTime * 0.3) * 0.2 + (i * Math.PI / 6);
         
-        // Pulse effect
-        const scale = 1 + Math.sin(elapsedTime * 0.5 + i * 0.7) * 0.05;
+        // More pronounced pulse effect
+        const scale = 1 + Math.sin(elapsedTime * 0.8 + i * 0.7) * 0.08;
         ring.scale.set(scale, scale, scale);
       });
       
-      // Animate data particles
+      // Animate data particles with increased speed
       const positionAttribute = dataPulseGeometry.attributes.position;
       const positions = positionAttribute.array as Float32Array;
       
       for (let i = 0; i < positions.length; i += 3) {
-        // Update positions with velocity and reset when out of bounds
-        positions[i] += dataPulseVelocities[i];
-        positions[i + 1] += dataPulseVelocities[i + 1];
-        positions[i + 2] += dataPulseVelocities[i + 2];
+        // Update positions with increased velocity
+        positions[i] += dataPulseVelocities[i] * 1.5;
+        positions[i + 1] += dataPulseVelocities[i + 1] * 1.5;
+        positions[i + 2] += dataPulseVelocities[i + 2] * 1.5;
         
         // Ensure particles stay within bounds or reset them
         const distance = Math.sqrt(
@@ -223,7 +223,7 @@ const ThreeBackground = () => {
           positions[i + 2] * positions[i + 2]
         );
         
-        if (distance > 25 || Math.random() < 0.001) {
+        if (distance > 25 || Math.random() < 0.003) {
           const angle = Math.random() * Math.PI * 10;
           const radius = 3 + Math.random() * 2;
           positions[i] = Math.cos(angle) * radius;
@@ -234,9 +234,9 @@ const ThreeBackground = () => {
       
       positionAttribute.needsUpdate = true;
       
-      // Gentle wave effect
-      particlesMesh.position.y = Math.sin(elapsedTime * 0.3) * 0.2;
-      lineMesh.position.y = Math.sin(elapsedTime * 0.3) * 0.2;
+      // More pronounced wave effect
+      particlesMesh.position.y = Math.sin(elapsedTime * 0.4) * 0.3;
+      lineMesh.position.y = Math.sin(elapsedTime * 0.4) * 0.3;
       
       // Render
       renderer.render(scene, camera);
@@ -244,6 +244,7 @@ const ThreeBackground = () => {
       requestAnimationFrame(animate);
     };
     
+    // Start animation
     animate();
     
     // Handle resize
@@ -281,6 +282,7 @@ const ThreeBackground = () => {
     <div 
       ref={containerRef} 
       className="absolute inset-0 -z-10 bg-gradient-to-b from-secondary via-secondary to-[#010207]"
+      style={{ overflow: 'hidden' }}
     />
   );
 };
