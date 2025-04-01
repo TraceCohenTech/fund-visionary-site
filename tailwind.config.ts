@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -38,8 +37,8 @@ export default {
           foreground: "#FFFFFF",
         },
         highlight: {
-          DEFAULT: "#FFFFFF", // White background
-          foreground: "#050A14", // Dark text for contrast
+          DEFAULT: "#1a1f2e", // Dark blue-gray background
+          foreground: "#FFFFFF", // White text for contrast
         }
       },
       animation: {
